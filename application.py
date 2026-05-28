@@ -10,8 +10,8 @@ import plotly
 # Data and model loading
 #------------------------------
 
-classifier= joblib.dump("https://github.com/Pradip-0/Predictive-Modeling-and-Risk-Scoring-for-Bank-Customer-Churn/blob/main/Models/classifier.joblib")
-preprocessor= joblib.dump("https://github.com/Pradip-0/Predictive-Modeling-and-Risk-Scoring-for-Bank-Customer-Churn/blob/main/Models/preprocessor.joblib")
+classifier= joblib.load("Models/classifier.joblib")
+preprocessor= joblib.load("Models/preprocessor.joblib")
 
 CreditScore = st.number_input("Enter your Credit Score")
 Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
