@@ -6,3 +6,7 @@ joblib
 matplotlib
 seaborn
 plotly
+scikit-learn
+xgboost
+shap
+json
