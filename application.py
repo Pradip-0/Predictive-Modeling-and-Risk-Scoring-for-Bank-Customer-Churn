@@ -36,7 +36,11 @@ if IsActiveMember_text == "Yes":
   IsActiveMember = 1
 else:
   IsActiveMember = 0
-
+Salary= st.text_input("Enter Customer Salary", value= 10000)
+try:
+    Salary = float(Balance_text)
+except ValueError:
+    Salary = 0.0
 
 input_data = {
         "CreditScore": [CreditScore],
@@ -48,6 +52,7 @@ input_data = {
         "NumOfProducts": [NumOfProducts],
         "HasCrCard": [HasCard],  # Using standard feature name
         "IsActiveMember": [IsActiveMember],
+        "Estimated Salary":[Salary]
     }
 
 bank= pd.DataFrame(input_data)
@@ -109,8 +114,8 @@ bank= create_additional_features(bank)
 
 bank_preprocessed= preprocessor.transform(bank)
 if st.button("Predict Churn Risk"):
-  probabilities = model.predict_proba(df_final)
-  churn_probability = probabilities[0][1] * 100
+  probabilities = classifier.predict_proba(bank_preprocessed)
+  churn_probability = probabilities[0][1]
   st.write("### Prediction Results")
   st.metric(label="Risk Probability", value=f"{churn_probability:.2%}")
   st.progress(float(churn_probability))
