@@ -142,10 +142,8 @@ if st.session_state["current_page"] == "dashboard":
     with btn_left_col:
         st.button("What-IF simulator", on_click= go_to_simulator)
     with btn_right_col:
-        st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
         if st.button("📥 Import Customer CSV Data"):
             upload_file_dialog()
-        st.markdown('</div>', unsafe_allow_html=True)
     if st.session_state["customer_data"] is not None:
         customer = st.session_state["customer_data"]
         columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
