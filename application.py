@@ -300,7 +300,7 @@ if st.session_state["current_page"] == "simulator":
     bank_preprocessed= preprocessor.transform(bank)
     if st.button("Predict Churn Risk"):
         probability = classifier.predict_proba(bank_preprocessed)
-        risk_percentage = probabilities[0][1]
+        risk_percentage = probability[0][1]
         if risk_percentage < 30:
             color = "#2ecc71"  # Soft Green
             status_label = "🟢 Low Churn Risk"
