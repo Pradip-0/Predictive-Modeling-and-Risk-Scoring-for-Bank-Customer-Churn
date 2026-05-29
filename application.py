@@ -312,92 +312,97 @@ if st.session_state["current_page"] == "simulator":
             color = "#e74c3c"  # Soft Red
             status_label = "🔴 High Churn Risk!"
 
-        st.write("### Prediction Results")
-        st.markdown(f"""
-            <div style="background-color: #1e222b; padding: 20px; border-radius: 10px; border-left: 5px solid {color};">
-                <p style="margin: 0; font-size: 14px; color: #a3a8b4; font-weight: bold; text-transform: uppercase;">{status_label}</p>
-                <h1 style="margin: 5px 0 0 0; font-size: 48px; color: {color}; font-weight: bold;">{risk_percentage:.2f}%</h1>
-            </div>
-        """, unsafe_allow_html=True)  
-        st.write("### 🔍 Individual Churn Driver Breakdown")
+        col1, col2= st.columns([3,7])
+        with col1:
+            st.write("### Prediction Results")
+            st.markdown(f"""
+                <div style="background-color: #1e222b; padding: 20px; border-radius: 10px; border-left: 5px solid {color};">
+                    <p style="margin: 0; font-size: 14px; color: #a3a8b4; font-weight: bold; text-transform: uppercase;">{status_label}</p>
+                    <h1 style="margin: 5px 0 0 0; font-size: 48px; color: {color}; font-weight: bold;">{risk_percentage:.2f}%</h1>
+                </div>
+            """, unsafe_allow_html=True)  
 
-        # --- 1. SET UP THE BASELINE AND PROBABILITIES ---
-        # Assume the overall bank baseline churn rate is roughly 20.4%
-        base_rate = 20 
-        total_delta = risk_percentage - base_rate  # The total amount the risk shifted
-        
-        # --- 2. EXTRACT LIVE USER INPUTS & MODEL IMPORTANCES ---
-        importances = classifier.feature_importances_
-        feature_names = [name.split("__")[-1] for name in preprocessor.get_feature_names_out()]
-        
-        # --- 3. COMPUTE DYNAMIC WEIGHTED SHIFTS ---
-        # We use the feature importance to distribute the total shift across features
-        total_importance = sum(importances)
-        normalized_weights = [imp / total_importance for imp in importances]
-        
-        # Map out the data dynamically
-        dynamic_x = ["Bank Base Average"]
-        dynamic_y = [base_rate]
-        dynamic_text = [f"{base_rate:.1f}%"]
-        dynamic_measure = ["relative"]
-        
-        # Distribute the risk movement among features
-        for name, weight in zip(feature_names, normalized_weights):
-            feature_shift = total_delta * weight
+        with col2:
+            st.write("### 🔍 Individual Churn Driver Breakdown")
+    
+            # --- 1. SET UP THE BASELINE AND PROBABILITIES ---
+            # Assume the overall bank baseline churn rate is roughly 20.4%
+            base_rate = 20 
+            total_delta = risk_percentage - base_rate  # The total amount the risk shifted
             
-            if abs(feature_shift) > 0.05:
-                # Check if the feature name exists in your input_data dict
-                if name in input_data:
-                    # Grab the single value out of the list bracket, e.g., [30][0] -> 30
-                    raw_val = input_data[name][0]
-                    
-                    # Convert numeric flags like 1/0 to pretty text for the manager
-                    if name in ["IsActiveMember", "HasCrCard"]:
-                        display_val = "Yes" if raw_val == 1 else "No"
-                    else:
-                        display_val = raw_val
+            # --- 2. EXTRACT LIVE USER INPUTS & MODEL IMPORTANCES ---
+            importances = classifier.feature_importances_
+            feature_names = [name.split("__")[-1] for name in preprocessor.get_feature_names_out()]
+            
+            # --- 3. COMPUTE DYNAMIC WEIGHTED SHIFTS ---
+            # We use the feature importance to distribute the total shift across features
+            total_importance = sum(importances)
+            normalized_weights = [imp / total_importance for imp in importances]
+            
+            # Map out the data dynamically
+            dynamic_x = ["Bank Base Average"]
+            dynamic_y = [base_rate]
+            dynamic_text = [f"{base_rate:.1f}%"]
+            dynamic_measure = ["relative"]
+            
+            # Distribute the risk movement among features
+            for name, weight in zip(feature_names, normalized_weights):
+                feature_shift = total_delta * weight
+                
+                if abs(feature_shift) > 0.05:
+                    # Check if the feature name exists in your input_data dict
+                    if name in input_data:
+                        # Grab the single value out of the list bracket, e.g., [30][0] -> 30
+                        raw_val = input_data[name][0]
                         
-                    label = f"{name} ({display_val})"
-                else:
-                    label = name
-                
-                dynamic_x.append(label)
-                dynamic_y.append(feature_shift)
-                
-                prefix = "+" if feature_shift > 0 else ""
-                dynamic_text.append(f"{prefix}{feature_shift:.2f}%")
-                dynamic_measure.append("relative")
-        
-        # Append the final total pillar
-        dynamic_x.append("Final Risk Score")
-        dynamic_y.append(risk_percentage)
-        dynamic_text.append(f"{risk_percentage:.2f}%")
-        dynamic_measure.append("total")
-        
-        # --- 4. RENDER THE DYNAMIC WATERFALL CHART ---
-        fig_waterfall = go.Figure(go.Waterfall(
-            name="Churn Drivers",
-            orientation="v",
-            measure=dynamic_measure,
-            x=dynamic_x,
-            text=dynamic_text,
-            y=dynamic_y,
-            connector={"line": {"color": "rgb(63, 63, 63)"}},
-            increasing={"marker": {"color": "#e74c3c"}},  # Red for raising risk
-            decreasing={"marker": {"color": "#2ecc71"}},  # Green for lowering risk
-            totals={"marker": {"color": "#4A90E2"}}       # Blue for the final answer
-        ))
-        
-        fig_waterfall.update_layout(
-            showlegend=False,
-            height=380,
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            margin=dict(t=20, b=20, l=20, r=20),
-            xaxis= {"tickangle": 90}
-        )
-        
-        st.plotly_chart(fig_waterfall, use_container_width=True)
+                        # Convert numeric flags like 1/0 to pretty text for the manager
+                        if name in ["IsActiveMember", "HasCrCard"]:
+                            display_val = "Yes" if raw_val == 1 else "No"
+                        else:
+                            display_val = raw_val
+                            
+                        label = f"{name} ({display_val})"
+                    else:
+                        label = name
+                    
+                    dynamic_x.append(label)
+                    dynamic_y.append(feature_shift)
+                    
+                    prefix = "+" if feature_shift > 0 else ""
+                    dynamic_text.append(f"{prefix}{feature_shift:.2f}%")
+                    dynamic_measure.append("relative")
+            
+            # Append the final total pillar
+            dynamic_x.append("Final Risk Score")
+            dynamic_y.append(risk_percentage)
+            dynamic_text.append(f"{risk_percentage:.2f}%")
+            dynamic_measure.append("total")
+            
+            # --- 4. RENDER THE DYNAMIC WATERFALL CHART ---
+            fig_waterfall = go.Figure(go.Waterfall(
+                name="Churn Drivers",
+                orientation="v",
+                measure=dynamic_measure,
+                x=dynamic_x,
+                text=dynamic_text,
+                y=dynamic_y,
+                connector={"line": {"color": "rgb(63, 63, 63)"}},
+                increasing={"marker": {"color": "#e74c3c"}},  # Red for raising risk
+                decreasing={"marker": {"color": "#2ecc71"}},  # Green for lowering risk
+                totals={"marker": {"color": "#4A90E2"}}       # Blue for the final answer
+            ))
+            
+            fig_waterfall.update_layout(
+                showlegend=False,
+                height=380,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                yaxis_title="Churn Risk Score (%)",
+                margin=dict(t=20, b=20, l=20, r=20),
+                xaxis= {"tickangle": 90}
+            )
+            
+            st.plotly_chart(fig_waterfall, use_container_width=True)
         
 
 
