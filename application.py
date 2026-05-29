@@ -262,9 +262,9 @@ if st.session_state["current_page"] == "simulator":
           IsActiveMember = 1
         else:
           IsActiveMember = 0
-        Salary= st.text_input("Enter Customer Salary", value= 10000)
+        Salary_text= st.text_input("Enter Customer Salary", value= 10000)
         try:
-            Salary = float(Balance_text)
+            Salary = float(Salary_text)
         except ValueError:
             Salary = 0.0
     
