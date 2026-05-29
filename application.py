@@ -20,6 +20,8 @@ from sklearn.inspection import PartialDependenceDisplay
 from itertools import combinations
 import traceback
 
+import streamlit as st
+
 #------------------------------
 # Data and model loading
 #------------------------------
