@@ -232,39 +232,40 @@ if st.session_state["current_page"] == "dashboard":
 #----------------------------------------------------
 if st.session_state["current_page"] == "simulator":
     st.title("🧪 What-If Scenario Simulator")
-    st.write("Adjust customer attributes to simulate churn risk behavior.")
-    st.button("General Dashboard", on_click=go_to_dashboard)
-#-----------------------------------------
-# Collecting Inputs
-#-------------------------------------------
-    CreditScore = st.number_input("Enter your Credit Score")
-    Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
-    Gender = st.radio("Gender",["Male","Female"])
-    Age = st.number_input("Enter Age",0,150, value= 30)
-    Tenure = st.slider("Enter Tenure", 0, 30, value= 1)
-    Balance_text = st.text_input("Enter Account Balance", value= 0.0)
-    try:
-        Balance = float(Balance_text)
-    except ValueError:
-        Balance = 0.0
-      
-    NumOfProducts = st.slider("Number of products using", 0, 5)
-    HasCard_text= st.radio("Does the customer have a credit card?", ["Yes", "No"])
-    if HasCard_text == "Yes":
-        HasCard = 1
-    else:
-        HasCard = 0
-    
-    IsActiveMember_text= st.radio("Does the customer use the services frequently?", ["Yes", "No"])
-    if IsActiveMember_text == "Yes":
-      IsActiveMember = 1
-    else:
-      IsActiveMember = 0
-    Salary= st.text_input("Enter Customer Salary", value= 10000)
-    try:
-        Salary = float(Balance_text)
-    except ValueError:
-        Salary = 0.0
+    with st.sidebar:
+        st.write("Adjust customer attributes to simulate churn risk behavior.")
+        st.button("General Dashboard", on_click=go_to_dashboard)
+    #-----------------------------------------
+    # Collecting Inputs
+    #-------------------------------------------
+        CreditScore = st.number_input("Enter your Credit Score")
+        Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
+        Gender = st.radio("Gender",["Male","Female"])
+        Age = st.number_input("Enter Age",0,150, value= 30)
+        Tenure = st.slider("Enter Tenure", 0, 30, value= 1)
+        Balance_text = st.text_input("Enter Account Balance", value= 0.0)
+        try:
+            Balance = float(Balance_text)
+        except ValueError:
+            Balance = 0.0
+          
+        NumOfProducts = st.slider("Number of products using", 0, 5)
+        HasCard_text= st.radio("Does the customer have a credit card?", ["Yes", "No"])
+        if HasCard_text == "Yes":
+            HasCard = 1
+        else:
+            HasCard = 0
+        
+        IsActiveMember_text= st.radio("Does the customer use the services frequently?", ["Yes", "No"])
+        if IsActiveMember_text == "Yes":
+          IsActiveMember = 1
+        else:
+          IsActiveMember = 0
+        Salary= st.text_input("Enter Customer Salary", value= 10000)
+        try:
+            Salary = float(Balance_text)
+        except ValueError:
+            Salary = 0.0
     
     input_data = {
             "CreditScore": [CreditScore],
