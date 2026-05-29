@@ -52,10 +52,57 @@ def go_to_simulator():
 def go_to_dashboard():
     st.session_state["current_page"] = "dashboard"
 
+TRAINING_MEDIAN_BALANCE = 97198.54
+TRAINING_MEDIAN_SALARY = 100193.915
+
+def create_basic_features(df):
+  df['AgeGroup'] = pd.cut(df['Age'], bins = [0, 19, 35, 60, 120], labels = ['Teenager', 'Young', 'Mid-age', 'Old'])
+  df['IsZeroBalance'] = df['Balance'].apply(lambda x: 1 if x > 0 else 0)
+  df['CreditScoreRating'] = pd.cut(df['CreditScore'], bins=[300, 579, 669, 739, 799, 850], labels=['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'])
+  df['HasMultipleProduct'] = df['NumOfProducts'].apply(lambda x: 1 if x > 1 else 0)
+  return df
+
+def create_intermediate_features(df):
+  df['BalanceSalaryRatio']= df['Balance']/df['EstimatedSalary']
+  df['TenureAgeRatio']= df['Tenure']/df['Age']
+  df['CreditScoreAgeRatio']= df['CreditScore']/df['Age']
+  df['EstimatedMonthlySalary']= df['EstimatedSalary']/12
+  return df
+
+def create_advanced_features(df):
+    df["AgeBalanceInteraction"] = df["Age"] * df["Balance"]
+    df["ProductDensity"] = df.apply(
+        lambda row: (
+            row["NumOfProducts"] / row["Tenure"] if row["Tenure"] != 0 else 0
+        ),
+        axis=1,
+    )
+    df["LoyalityScore"] = df["Tenure"] * df["IsActiveMember"]
+    df["WealthSignifier"] = (
+        (df["Balance"] > TRAINING_MEDIAN_BALANCE)
+        & (df["EstimatedSalary"] > TRAINING_MEDIAN_SALARY)
+    ).astype(int)
+    return df
+    
+def create_additional_features(df):
+    df["TenureRiskGroup"] = pd.cut(df["Tenure"],bins=[-1, 2, 9, np.inf],
+        labels=["Early_HighRisk", "Mid_Stable", "Late_HighRisk"],
+    )
+    df["MidTierDanger"] = df["Balance"].between(100000, 150000).astype(int)
+    df["GermanPassiveWealth"] = ((df["Geography"] == "Germany") & (df["IsActiveMember"] == 0) & (df["Balance"] > 0)).astype(int)
+    df["HighRiskGermanCohort"] = ((df["Geography"] == "Germany") & (df["Age"] >= 45) & (df["IsActiveMember"] == 0) & (df["NumOfProducts"].isin([1, 3, 4]))).astype(int)
+    df["BalancePerProduct"] = df["Balance"] / df["NumOfProducts"]
+    df["CardButInactive"] = ((df["HasCrCard"] == 1) & (df["IsActiveMember"] == 0)).astype(int)
+    df["CardAndActive"] = ((df["HasCrCard"] == 1) & (df["IsActiveMember"] == 1)).astype(int)
+    df["TeenZeroBalance"] = ((df["Age"] <= 19) & (df["Balance"] == 0)).astype(int)
+    df["ActiveZeroBalance"] = ((df["Balance"] == 0) & (df["IsActiveMember"] == 1)).astype(int)
+    df["Female_Germany"] = ((df["Gender"] == "Female") & (df["Geography"] == "Germany")).astype(int)
+    return df
+
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
-if st.session._state["current_page"] = "dashboard":
+if st.session._state["current_page"] == "dashboard":
     st.title("General dashboard for current customers")
     st.button("What-IF simulator", on_click= go_to_simulator)
     uploaded_file = st.file_uploader("Upload your customer CSV file", type=["csv"])
@@ -71,6 +118,10 @@ if st.session._state["current_page"] = "dashboard":
     has_all_columns = columns_need_set.issubset(columns_current_set)
     if has_all_columns:
         bank= customer[columns_need]
+        bank= create_basic_features(bank)
+        bank= create_intermediate_features(bank)
+        bank= create_advanced_features(bank)
+        bank= create_additional_features(bank)
         processed_bank = preprocessor.transform(bank)
         probabilities = classifier.predict_proba(processed_bank)
         churn_risk_scores = probabilities[:, 1]
@@ -83,7 +134,7 @@ if st.session._state["current_page"] = "dashboard":
         #top_10_risky = results_df.head(10).copy()
         st.write("### 🚨 Top 10 High-Risk Customers (Most Likely to Churn)")
         st.dataframe(results_df.head(10), use_container_width=True)
-    if has_all_columns == False:
+    else:
         missing_columns = columns_need_set - columns_current_set
         st.error(f"❌ Missing Columns! The uploaded file is missing: {list(missing_columns)}")
 
@@ -144,52 +195,7 @@ if st.session_state["current_page"] == "simulator":
     #------------------------
     # Feature Engineering
     #--------------------------
-    TRAINING_MEDIAN_BALANCE = 97198.54
-    TRAINING_MEDIAN_SALARY = 100193.915
     
-    def create_basic_features(df):
-      df['AgeGroup'] = pd.cut(df['Age'], bins = [0, 19, 35, 60, 120], labels = ['Teenager', 'Young', 'Mid-age', 'Old'])
-      df['IsZeroBalance'] = df['Balance'].apply(lambda x: 1 if x > 0 else 0)
-      df['CreditScoreRating'] = pd.cut(df['CreditScore'], bins=[300, 579, 669, 739, 799, 850], labels=['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'])
-      df['HasMultipleProduct'] = df['NumOfProducts'].apply(lambda x: 1 if x > 1 else 0)
-      return df
-    
-    def create_intermediate_features(df):
-      df['BalanceSalaryRatio']= df['Balance']/df['EstimatedSalary']
-      df['TenureAgeRatio']= df['Tenure']/df['Age']
-      df['CreditScoreAgeRatio']= df['CreditScore']/df['Age']
-      df['EstimatedMonthlySalary']= df['EstimatedSalary']/12
-      return df
-    
-    def create_advanced_features(df):
-        df["AgeBalanceInteraction"] = df["Age"] * df["Balance"]
-        df["ProductDensity"] = df.apply(
-            lambda row: (
-                row["NumOfProducts"] / row["Tenure"] if row["Tenure"] != 0 else 0
-            ),
-            axis=1,
-        )
-        df["LoyalityScore"] = df["Tenure"] * df["IsActiveMember"]
-        df["WealthSignifier"] = (
-            (df["Balance"] > TRAINING_MEDIAN_BALANCE)
-            & (df["EstimatedSalary"] > TRAINING_MEDIAN_SALARY)
-        ).astype(int)
-        return df
-    
-    def create_additional_features(df):
-        df["TenureRiskGroup"] = pd.cut(df["Tenure"],bins=[-1, 2, 9, np.inf],
-            labels=["Early_HighRisk", "Mid_Stable", "Late_HighRisk"],
-        )
-        df["MidTierDanger"] = df["Balance"].between(100000, 150000).astype(int)
-        df["GermanPassiveWealth"] = ((df["Geography"] == "Germany") & (df["IsActiveMember"] == 0) & (df["Balance"] > 0)).astype(int)
-        df["HighRiskGermanCohort"] = ((df["Geography"] == "Germany") & (df["Age"] >= 45) & (df["IsActiveMember"] == 0) & (df["NumOfProducts"].isin([1, 3, 4]))).astype(int)
-        df["BalancePerProduct"] = df["Balance"] / df["NumOfProducts"]
-        df["CardButInactive"] = ((df["HasCrCard"] == 1) & (df["IsActiveMember"] == 0)).astype(int)
-        df["CardAndActive"] = ((df["HasCrCard"] == 1) & (df["IsActiveMember"] == 1)).astype(int)
-        df["TeenZeroBalance"] = ((df["Age"] <= 19) & (df["Balance"] == 0)).astype(int)
-        df["ActiveZeroBalance"] = ((df["Balance"] == 0) & (df["IsActiveMember"] == 1)).astype(int)
-        df["Female_Germany"] = ((df["Gender"] == "Female") & (df["Geography"] == "Germany")).astype(int)
-        return df
     
     bank= create_basic_features(bank)
     bank= create_intermediate_features(bank)
