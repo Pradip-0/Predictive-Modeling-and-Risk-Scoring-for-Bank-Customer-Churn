@@ -119,10 +119,9 @@ def upload_file_dialog():
 if st.session_state["current_page"] == "dashboard":
     st.title("General dashboard for current customers")
     st.button("What-IF simulator", on_click= go_to_simulator)
-    customer =  upload_file_dialog()
     if st.button("📥 Import Customer CSV Data"):
         upload_file_dialog()
-    if uploaded_file is not None:
+    if customer is not None:
         if st.button("Create Dashboard"):
             columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
         
