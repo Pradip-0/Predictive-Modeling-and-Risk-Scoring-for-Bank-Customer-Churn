@@ -23,10 +23,24 @@ import plotly.express as px
 import streamlit as st
 
 st.set_page_config(layout="wide")
+
+st.markdown("""
+    <style>
+        /* Removes huge empty padding space at the top of the main container */
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 0rem !important;
+        }
+        /* Removes empty whitespace block sitting right above the main title */
+        stHeader {
+            height: 0px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 #------------------------------
 # Data and model loading
 #------------------------------
-
 try:
     classifier = joblib.load("Models/classifier.joblib")
 except ModuleNotFoundError as e:
@@ -124,10 +138,10 @@ def upload_file_dialog():
 #---------------------------------------------------------
 if st.session_state["current_page"] == "dashboard":
     st.title("General Dashboard")
-    header_col_left, header_col_right = st.columns([1, 1])
-    with header_col_left:
+    btn_left_col, space_col, btn_right_col = st.columns([1, 5, 2])
+    with btn_left_col:
         st.button("What-IF simulator", on_click= go_to_simulator)
-    with header_col_right:
+    with btn_right_col:
         st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
         if st.button("📥 Import Customer CSV Data"):
             upload_file_dialog()
