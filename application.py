@@ -21,6 +21,7 @@ from itertools import combinations
 import traceback
 import plotly.express as px
 import streamlit as st
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
 
@@ -300,7 +301,7 @@ if st.session_state["current_page"] == "simulator":
     bank_preprocessed= preprocessor.transform(bank)
     if st.button("Predict Churn Risk"):
         probability = classifier.predict_proba(bank_preprocessed)
-        risk_percentage = probability[0][1]
+        risk_percentage = probability[0][1] * 100
         if risk_percentage < 30:
             color = "#2ecc71"  # Soft Green
             status_label = "🟢 Low Churn Risk"
@@ -318,6 +319,89 @@ if st.session_state["current_page"] == "simulator":
                 <h1 style="margin: 5px 0 0 0; font-size: 48px; color: {color}; font-weight: bold;">{risk_percentage:.2f}%</h1>
             </div>
         """, unsafe_allow_html=True)  
+        st.write("### 🔍 Individual Churn Driver Breakdown")
+
+        # --- 1. SET UP THE BASELINE AND PROBABILITIES ---
+        # Assume the overall bank baseline churn rate is roughly 20.4%
+        base_rate = 20 
+        total_delta = risk_percentage - base_rate  # The total amount the risk shifted
+        
+        # --- 2. EXTRACT LIVE USER INPUTS & MODEL IMPORTANCES ---
+        importances = classifier.feature_importances_
+        feature_names = [name.split("__")[-1] for name in preprocessor.get_feature_names_out()]
+        
+        # Dictionary matching feature names to their live values from your input widgets
+        live_values = {
+            "Age": age,
+            "Balance": balance,
+            "NumOfProducts": num_products,
+            "IsActiveMember": "Yes" if is_active == 1 else "No",
+            "CreditScore": credit_score,
+            "Geography": geography,
+            "Gender": gender,
+            "Tenure": tenure,
+            "HasCrCard": "Yes" if has_cr_card == 1 else "No",
+            "EstimatedSalary": estimated_salary
+        }
+        
+        # --- 3. COMPUTE DYNAMIC WEIGHTED SHIFTS ---
+        # We use the feature importance to distribute the total shift across features
+        total_importance = sum(importances)
+        normalized_weights = [imp / total_importance for imp in importances]
+        
+        # Map out the data dynamically
+        dynamic_x = ["Bank Base Average"]
+        dynamic_y = [base_rate]
+        dynamic_text = [f"{base_rate:.1f}%"]
+        dynamic_measure = ["relative"]
+        
+        # Distribute the risk movement among features
+        for name, weight in zip(feature_names, normalized_weights):
+            feature_shift = total_delta * weight
+            
+            # Only show features that have a noticeable impact to keep the chart clean
+            if abs(feature_shift) > 0.05:
+                # Pull the live value from your sidebar control
+                display_val = live_values.get(name, "")
+                label = f"{name} ({display_val})" if display_val != "" else name
+                
+                dynamic_x.append(label)
+                dynamic_y.append(feature_shift)
+                
+                # Format the text with a clear plus or minus sign
+                prefix = "+" if feature_shift > 0 else ""
+                dynamic_text.append(f"{prefix}{feature_shift:.2f}%")
+                dynamic_measure.append("relative")
+        
+        # Append the final total pillar
+        dynamic_x.append("Final Risk Score")
+        dynamic_y.append(risk_percentage)
+        dynamic_text.append(f"{risk_percentage:.2f}%")
+        dynamic_measure.append("total")
+        
+        # --- 4. RENDER THE DYNAMIC WATERFALL CHART ---
+        fig_waterfall = go.Figure(go.Waterfall(
+            name="Churn Drivers",
+            orientation="v",
+            measure=dynamic_measure,
+            x=dynamic_x,
+            text=dynamic_text,
+            y=dynamic_y,
+            connector={"line": {"color": "rgb(63, 63, 63)"}},
+            increasing={"marker": {"color": "#e74c3c"}},  # Red for raising risk
+            decreasing={"marker": {"color": "#2ecc71"}},  # Green for lowering risk
+            totals={"marker": {"color": "#4A90E2"}}       # Blue for the final answer
+        ))
+        
+        fig_waterfall.update_layout(
+            showlegend=False,
+            height=380,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(t=20, b=20, l=20, r=20)
+        )
+        
+        st.plotly_chart(fig_waterfall, use_container_width=True)
         
 
 
