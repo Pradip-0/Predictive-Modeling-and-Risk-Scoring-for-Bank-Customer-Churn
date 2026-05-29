@@ -176,7 +176,7 @@ if st.session_state["current_page"] == "dashboard":
                 sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
                 expanded_df = sorted_df.head(current_limit).copy()
                 st.write(f"#### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
-                st.dataframe(expanded_df, use_container_width=True, height= 200)
+                st.dataframe(expanded_df, use_container_width=True, height= 150)
                 total_available_rows = len(results_df)
                 if current_limit < total_available_rows:
                     def load_more_customers():
@@ -195,7 +195,7 @@ if st.session_state["current_page"] == "dashboard":
                 labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
                 color_discrete_sequence=["#4A90E2"]
                 )
-                fig_dist.update_layout(yaxis_title="Count of Customers", height= 200)
+                fig_dist.update_layout(yaxis_title="Count of Customers", height= 250)
                 st.plotly_chart(fig_dist, use_container_width=True)
 
                 
