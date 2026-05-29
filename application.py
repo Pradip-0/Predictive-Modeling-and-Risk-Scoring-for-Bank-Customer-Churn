@@ -175,7 +175,7 @@ if st.session_state["current_page"] == "dashboard":
                 current_limit = st.session_state["visible_rows"]
                 sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
                 expanded_df = sorted_df.head(current_limit).copy()
-                st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
+                st.write(f"#### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
                 st.dataframe(expanded_df, use_container_width=True, height= 200)
                 total_available_rows = len(results_df)
                 if current_limit < total_available_rows:
@@ -187,7 +187,7 @@ if st.session_state["current_page"] == "dashboard":
                     
                 st.markdown("<br>", unsafe_allow_html=True)
             
-                st.write("### 📊 Probability Distribution Visualization")
+                st.write("#### 📊 Probability Distribution Visualization")
                 fig_dist = px.histogram(
                 results_df, 
                 x="Churn Risk Score", 
@@ -207,7 +207,7 @@ if st.session_state["current_page"] == "dashboard":
                 "Feature": clean_feature_names,
                 "Importance": importances
                 }).sort_values(by="Importance", ascending=True)
-                st.write("Key Drivers of Customer Churn")
+                st.write("#### Key Drivers of Customer Churn")
                 fig_importance = px.bar(
                 df_importance,
                 x="Importance",
