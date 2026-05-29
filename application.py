@@ -23,8 +23,24 @@ from itertools import combinations
 # Data and model loading
 #------------------------------
 
-classifier= joblib.load("Models/classifier.joblib")
-preprocessor= joblib.load("Models/preprocessor.joblib")
+try:
+    classifier = joblib.load("Models/classifier.joblib")
+    st.success("Model loaded successfully!")
+except ModuleNotFoundError as e:
+    st.error(f"Missing Library Detected: {e}")
+except Exception as e:
+    st.error("Different Error Occurred:")
+    st.code(traceback.format_exc())
+
+try:
+    preprocessor= joblib.load("Models/preprocessor.joblib")
+    st.success("Preprocessor loaded successfully!")
+except ModuleNotFoundError as e:
+    st.error(f"Missing Library Detected: {e}")
+except Exception as e:
+    st.error("Different Error Occurred:")
+    st.code(traceback.format_exc())
+
 
 CreditScore = st.number_input("Enter your Credit Score")
 Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
