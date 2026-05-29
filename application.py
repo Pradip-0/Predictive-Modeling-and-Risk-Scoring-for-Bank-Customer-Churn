@@ -48,7 +48,7 @@ except Exception as e:
 #-------------------------------------------
 CreditScore = st.number_input("Enter your Credit Score")
 Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
-Gender = st.pills("Gender",["Male","Female"])
+Gender = st.radio("Gender",["Male","Female"])
 Age = st.number_input("Enter Age",0,150, value= 30)
 Tenure = st.slider("Enter Tenure", 0, 30, value= 1)
 Balance_text = st.text_input("Enter Account Balance", value= 0.0)
