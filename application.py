@@ -164,7 +164,7 @@ if st.session_state["current_page"] == "dashboard":
                 sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
                 expanded_df = sorted_df.head(current_limit).copy()
                 st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
-                st.dataframe(expanded_df, use_container_width=True)
+                st.dataframe(expanded_df, use_container_width=True, height= 450)
                 total_available_rows = len(results_df)
                 if current_limit < total_available_rows:
                     def load_more_customers():
@@ -182,7 +182,7 @@ if st.session_state["current_page"] == "dashboard":
                 labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
                 color_discrete_sequence=["#4A90E2"]
                 )
-                fig_dist.update_layout(yaxis_title="Count of Customers")
+                fig_dist.update_layout(yaxis_title="Count of Customers", height= 240)
                 st.plotly_chart(fig_dist, use_container_width=True)
 
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -203,7 +203,7 @@ if st.session_state["current_page"] == "dashboard":
                 labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
                 color="Importance",
                 color_continuous_scale="Blues")
-                fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=500)
+                fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=260)
                 st.plotly_chart(fig_importance, use_container_width=True)
                 st.info(
                     "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
