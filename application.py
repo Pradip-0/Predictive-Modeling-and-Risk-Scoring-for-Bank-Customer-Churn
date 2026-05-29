@@ -43,6 +43,10 @@ except Exception as e:
     st.error("Different Error Occurred:")
     st.code(traceback.format_exc())
 
+#---------------------------------------------------------------
+# Functions
+#--------------------------------------------------------------
+
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "dashboard"
 
@@ -102,7 +106,7 @@ def create_additional_features(df):
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
-if st.session._state["current_page"] == "dashboard":
+if st.session_state["current_page"] == "dashboard":
     st.title("General dashboard for current customers")
     st.button("What-IF simulator", on_click= go_to_simulator)
     uploaded_file = st.file_uploader("Upload your customer CSV file", type=["csv"])
