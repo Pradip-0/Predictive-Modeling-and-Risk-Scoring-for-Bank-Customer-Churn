@@ -301,10 +301,25 @@ if st.session_state["current_page"] == "simulator":
     if st.button("Predict Churn Risk"):
         probabilities = classifier.predict_proba(bank_preprocessed)
         churn_probability = probabilities[0][1]
+        if risk_percentage < 30:
+            color = "#2ecc71"  # Soft Green
+            status_label = "🟢 Low Churn Risk"
+        elif risk_percentage < 70:
+            color = "#f39c12"  # Soft Orange
+            status_label = "🟡 Medium Churn Risk"
+        else:
+            color = "#e74c3c"  # Soft Red
+            status_label = "🔴 High Churn Risk!"
+
         st.write("### Prediction Results")
-        st.metric(label="Risk Probability", value=f"{churn_probability:.2%}")
-        st.progress(float(churn_probability))
-    
+        st.markdown(f"""
+            <div style="background-color: #1e222b; padding: 20px; border-radius: 10px; border-left: 5px solid {color};">
+                <p style="margin: 0; font-size: 14px; color: #a3a8b4; font-weight: bold; text-transform: uppercase;">{status_label}</p>
+                <h1 style="margin: 5px 0 0 0; font-size: 48px; color: {color}; font-weight: bold;">{risk_percentage:.2f}%</h1>
+            </div>
+        """, unsafe_allow_html=True)
+
+   """ 
         class_names = classifier.classes_
         labels = ["Retained (Class 0)", "Churned (Class 1)"]
         df_prediction = pd.DataFrame({
@@ -314,7 +329,7 @@ if st.session_state["current_page"] == "simulator":
         fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1], color_discrete_map={"Retained (Class 0)": "green", "Churned (Class 1)": "red"})
         st.write(f"### Probability Distribution")
         st.plotly_chart(fig)
-        
+   """     
         
 
 
