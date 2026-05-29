@@ -111,8 +111,10 @@ def upload_file_dialog():
     uploaded_file = st.file_uploader("Choose CSV", type=["csv"])
     
     if uploaded_file is not None:
-        customer = pd.read_csv(uploaded_file)
-        st.button("RUN", on_click= go_to_dashboard)
+        if st.button("Run"):
+            st.session_state["customer_data"] = pd.read_csv(uploaded_file)
+            go_to_dashboard()
+            st.rerun()
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
@@ -121,8 +123,9 @@ if st.session_state["current_page"] == "dashboard":
     st.button("What-IF simulator", on_click= go_to_simulator)
     if st.button("📥 Import Customer CSV Data"):
         upload_file_dialog()
-    if customer is not None:
+    if st.session_state["customer_data"] is not None:
         if st.button("Create Dashboard"):
+            customer = st.session_state["customer_data"]
             columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
         
             columns_current_set= set(customer.columns)
