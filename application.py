@@ -161,7 +161,7 @@ if st.button("Predict Churn Risk"):
     "Probability": [probabilities[0][0], probabilities[0][1]]
     })
     fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1])
-    st.write(f"### Probability Distribution for Customer #{row_index}")
+    st.write(f"### Probability Distribution")
     st.plotly_chart(fig)
 
 
