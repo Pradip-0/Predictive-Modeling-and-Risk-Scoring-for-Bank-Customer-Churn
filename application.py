@@ -142,7 +142,7 @@ if st.session_state["current_page"] == "dashboard":
         missing_columns = columns_need_set - columns_current_set
         st.error(f"❌ Missing Columns! The uploaded file is missing: {list(missing_columns)}")
 else:
-    st.write("Upload Customer data as .csv file. Ensure CustomerId is there)
+    st.write("Upload Customer data as .csv file. Ensure CustomerId ifeature is inside the CSV file.")
 
 #----------------------------------------------------
 # What-if Scenario simulator
