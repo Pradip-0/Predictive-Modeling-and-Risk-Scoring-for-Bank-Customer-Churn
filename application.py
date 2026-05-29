@@ -176,11 +176,11 @@ if st.session_state["current_page"] == "dashboard":
                 sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
                 expanded_df = sorted_df.head(current_limit).copy()
                 st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
-                st.dataframe(expanded_df, use_container_width=True, height= 250)
+                st.dataframe(expanded_df, use_container_width=True, height= 200)
                 total_available_rows = len(results_df)
                 if current_limit < total_available_rows:
                     def load_more_customers():
-                        st.session_state["visible_rows"] += 10
+                        st.session_state["visible_rows"] += 5
                     st.button("🔽 Click to see more", on_click=load_more_customers)
                 else:
                     st.info("✨ Showing all available customer risk scores.")
@@ -195,7 +195,7 @@ if st.session_state["current_page"] == "dashboard":
                 labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
                 color_discrete_sequence=["#4A90E2"]
                 )
-                fig_dist.update_layout(yaxis_title="Count of Customers", height= 250)
+                fig_dist.update_layout(yaxis_title="Count of Customers", height= 200)
                 st.plotly_chart(fig_dist, use_container_width=True)
 
                 
@@ -207,16 +207,16 @@ if st.session_state["current_page"] == "dashboard":
                 "Feature": clean_feature_names,
                 "Importance": importances
                 }).sort_values(by="Importance", ascending=True)
+                st.write("Key Drivers of Customer Churn")
                 fig_importance = px.bar(
                 df_importance,
                 x="Importance",
                 y="Feature",
                 orientation="h",
-                title="Key Drivers of Customer Churn",
                 labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
                 color="Importance",
                 color_continuous_scale="Blues")
-                fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=500)
+                fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=400)
                 st.plotly_chart(fig_importance, use_container_width=True)
                 st.info(
                     "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
