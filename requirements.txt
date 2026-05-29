@@ -1,10 +1,13 @@
 streamlit
-pandas
-numpy
-xgboost
-joblib
-matplotlib
-seaborn
-plotly
-scikit-learn
-shap
+pandas == 2.3.3
+numpy == 2.0.2
+xgboost == 3.2.0
+joblib == 1.5.3
+matplotlib == 3.10.0
+seaborn == 0.13.2
+plotly == 5.24.1
+scikit-learn == 1.6.1
+shap == 0.51.0
+imbalanced-learn == 0.14.1
+optuna == 4.8.0
+tabulate == 0.9.0
