@@ -123,9 +123,14 @@ def upload_file_dialog():
 #---------------------------------------------------------
 if st.session_state["current_page"] == "dashboard":
     st.title("General Dashboard")
-    st.button("What-IF simulator", on_click= go_to_simulator)
-    if st.button("📥 Import Customer CSV Data"):
-        upload_file_dialog()
+    header_col_left, header_col_right = st.columns([1, 1])
+    with header_col_left:
+        st.button("What-IF simulator", on_click= go_to_simulator)
+    with header_col_right:
+        st.markdown('<div style="text-align: right;">', unsafe_allow_html=True)
+        if st.button("📥 Import Customer CSV Data"):
+            upload_file_dialog()
+        st.markdown('</div>', unsafe_allow_html=True)
     if st.session_state["customer_data"] is not None:
         customer = st.session_state["customer_data"]
         columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
@@ -178,6 +183,8 @@ if st.session_state["current_page"] == "dashboard":
                 )
                 fig_dist.update_layout(yaxis_title="Count of Customers")
                 st.plotly_chart(fig_dist, use_container_width=True)
+
+                st.markdown("<br>", unsafe_allow_html=True)
     
                 importances = classifier.feature_importances_
                 feature_names = preprocessor.get_feature_names_out()
