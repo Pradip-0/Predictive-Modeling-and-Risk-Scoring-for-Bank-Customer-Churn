@@ -165,6 +165,36 @@ if st.button("Predict Churn Risk"):
     fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1], color_discrete_map={"Retained (Class 0)": "green", "Churned (Class 1)": "red"})
     st.write(f"### Probability Distribution")
     st.plotly_chart(fig)
+    
+    importances = classifier.feature_importances_
+    feature_names = preprocessor.get_feature_names_out()
+    df_importance = pd.DataFrame({
+    "Feature": feature_names,
+    "Importance": importances
+    }).sort_values(by="Importance", ascending=True)
+    fig_importance = px.bar(
+    df_importance,
+    x="Importance",
+    y="Feature",
+    orientation="h",
+    title="Key Drivers of Customer Churn",
+    labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
+    color="Importance",
+    color_continuous_scale="Blues")
+    fig_importance.update_layout(yaxis={"categoryorder": "value ascending"},  height=500)
+    st.plotly_chart(fig_importance, use_container_width=True)
+    st.info(
+        "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
+        "Higher scores indicate that the feature has a stronger impact on whether a customer stays or leaves."
+    )
+
+
+
+
+
+
+
+
 
 
 
