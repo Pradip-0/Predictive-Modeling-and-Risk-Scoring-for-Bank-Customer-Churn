@@ -104,16 +104,25 @@ def create_additional_features(df):
     df["Female_Germany"] = ((df["Gender"] == "Female") & (df["Geography"] == "Germany")).astype(int)
     return df
 
+
+@st.dialog("Upload Customer File")
+def upload_file_dialog():
+    st.write("Please select your bank customer CSV file.")
+    uploaded_file = st.file_uploader("Choose CSV", type=["csv"])
+    
+    if uploaded_file is not None:
+        customer = pd.read_csv(uploaded_file)
+        if st.button("Run Bulk Prediction"):
+            st.rerun()
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
 if st.session_state["current_page"] == "dashboard":
     st.title("General dashboard for current customers")
     st.button("What-IF simulator", on_click= go_to_simulator)
-    uploaded_file = st.file_uploader("Upload your customer CSV file", type=["csv"])
+    customer =  upload_file_dialog()
     if uploaded_file is not None:
         if st.button("Create Dashboard"):
-            customer = pd.read_csv(uploaded_file)
             columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
         
             columns_current_set= set(customer.columns)
