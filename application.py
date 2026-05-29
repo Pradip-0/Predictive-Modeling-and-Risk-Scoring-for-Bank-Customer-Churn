@@ -138,12 +138,11 @@ if st.session_state["current_page"] == "dashboard":
                 fig_dist = px.histogram(
                 results_df, 
                 x="Churn Risk Score", 
-                nbins=20, 
                 title="Global Churn Risk Score Distribution",
                 labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
                 color_discrete_sequence=["#4A90E2"]
                 )
-                fig_dist.update_layout(xaxis_tickformat=".0%",  yaxis_title="Count of Customers", bargap=0.05)
+                fig_dist.update_layout(yaxis_title="Count of Customers")
                 st.plotly_chart(fig_dist, use_container_width=True)
 
                 importances = classifier.feature_importances_
