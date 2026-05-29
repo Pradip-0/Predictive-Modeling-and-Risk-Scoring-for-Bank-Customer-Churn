@@ -19,7 +19,7 @@ import shap
 from sklearn.inspection import PartialDependenceDisplay
 from itertools import combinations
 import traceback
-
+import plotly.express as px
 import streamlit as st
 
 #------------------------------
@@ -28,7 +28,6 @@ import streamlit as st
 
 try:
     classifier = joblib.load("Models/classifier.joblib")
-    st.success("Model loaded successfully!")
 except ModuleNotFoundError as e:
     st.error(f"Missing Library Detected: {e}")
     st.stop()
@@ -38,14 +37,15 @@ except Exception as e:
 
 try:
     preprocessor= joblib.load("Models/preprocessor.joblib")
-    st.success("Preprocessor loaded successfully!")
 except ModuleNotFoundError as e:
     st.error(f"Missing Library Detected: {e}")
 except Exception as e:
     st.error("Different Error Occurred:")
     st.code(traceback.format_exc())
-
-
+    
+#-----------------------------------------
+# Collecting Inputs
+#-------------------------------------------
 CreditScore = st.number_input("Enter your Credit Score")
 Geography = st.selectbox("Enter location",options= ["France","Germany","Spain"])
 Gender = st.pills("Gender",["Male","Female"])
@@ -145,13 +145,25 @@ bank= create_intermediate_features(bank)
 bank= create_advanced_features(bank)
 bank= create_additional_features(bank)
 
+#----------------------------------------------------
+# Prediction
+#----------------------------------------------------
 bank_preprocessed= preprocessor.transform(bank)
 if st.button("Predict Churn Risk"):
-  probabilities = classifier.predict_proba(bank_preprocessed)
-  churn_probability = probabilities[0][1]
-  st.write("### Prediction Results")
-  st.metric(label="Risk Probability", value=f"{churn_probability:.2%}")
-  st.progress(float(churn_probability))
+    probabilities = classifier.predict_proba(bank_preprocessed)
+    churn_probability = probabilities[0][1]
+    st.write("### Prediction Results")
+    st.metric(label="Risk Probability", value=f"{churn_probability:.2%}")
+    st.progress(float(churn_probability))
+    class_names = classifier.classes_
+    df_prediction = pd.DataFrame({
+    "Outcome": class_names,
+    "Probability": probabilities
+    })
+    fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1])
+    st.write(f"### Probability Distribution for Customer #{row_index}")
+    st.plotly_chart(fig)
+
 
 
 
