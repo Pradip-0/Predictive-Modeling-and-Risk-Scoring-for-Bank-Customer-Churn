@@ -84,7 +84,7 @@ input_data = {
         "NumOfProducts": [NumOfProducts],
         "HasCrCard": [HasCard],  # Using standard feature name
         "IsActiveMember": [IsActiveMember],
-        "Estimated Salary":[Salary]
+        "EstimatedSalary":[Salary]
     }
 
 bank= pd.DataFrame(input_data)
