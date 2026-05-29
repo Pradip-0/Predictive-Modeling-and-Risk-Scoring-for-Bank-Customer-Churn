@@ -317,19 +317,7 @@ if st.session_state["current_page"] == "simulator":
                 <p style="margin: 0; font-size: 14px; color: #a3a8b4; font-weight: bold; text-transform: uppercase;">{status_label}</p>
                 <h1 style="margin: 5px 0 0 0; font-size: 48px; color: {color}; font-weight: bold;">{risk_percentage:.2f}%</h1>
             </div>
-        """, unsafe_allow_html=True)
-
-   """ 
-        class_names = classifier.classes_
-        labels = ["Retained (Class 0)", "Churned (Class 1)"]
-        df_prediction = pd.DataFrame({
-        "Outcome": ["No Churn", "Churn Risk"],
-        "Probability": [probabilities[0][0], probabilities[0][1]]
-        })
-        fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1], color_discrete_map={"Retained (Class 0)": "green", "Churned (Class 1)": "red"})
-        st.write(f"### Probability Distribution")
-        st.plotly_chart(fig)
-   """     
+        """, unsafe_allow_html=True)  
         
 
 
