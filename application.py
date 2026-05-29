@@ -191,7 +191,6 @@ if st.session_state["current_page"] == "dashboard":
                 fig_dist = px.histogram(
                 results_df, 
                 x="Churn Risk Score", 
-                title="Global Churn Risk Score Distribution",
                 labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
                 color_discrete_sequence=["#4A90E2"]
                 )
