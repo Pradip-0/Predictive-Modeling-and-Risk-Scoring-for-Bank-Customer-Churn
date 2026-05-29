@@ -31,6 +31,7 @@ try:
     st.success("Model loaded successfully!")
 except ModuleNotFoundError as e:
     st.error(f"Missing Library Detected: {e}")
+    st.stop()
 except Exception as e:
     st.error("Different Error Occurred:")
     st.code(traceback.format_exc())
