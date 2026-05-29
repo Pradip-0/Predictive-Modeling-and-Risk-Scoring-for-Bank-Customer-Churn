@@ -125,7 +125,7 @@ if st.session_state["current_page"] == "dashboard":
                 new_mdeian_salary = bank['EstimatedSalary'].median()
                 n_new = len(bank)
                 TRAINING_MEDIAN_BALANCE = (past_median_BALANCE * train_data_count + new_median_balance * n_new) / (train_data_count + n_new)
-                TRAINING_MEDIAN_SALARY = (past_median_SALARY * train_data_count + new_median_salary * n_new) / (train_data_count + n_new)
+                TRAINING_MEDIAN_SALARY = (past_median_SALARY * train_data_count + new_mdeian_salary * n_new) / (train_data_count + n_new)
 
                 bank= create_basic_features(bank)
                 bank= create_intermediate_features(bank)
