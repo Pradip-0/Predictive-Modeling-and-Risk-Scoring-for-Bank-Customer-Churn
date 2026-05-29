@@ -56,6 +56,9 @@ def go_to_simulator():
 def go_to_dashboard():
     st.session_state["current_page"] = "dashboard"
 
+if "customer_data" not in st.session_state:
+    st.session_state["customer_data"] = None
+
 past_median_BALANCE = 97198.54
 past_median_SALARY = 100193.915
 train_data_count= 10000
