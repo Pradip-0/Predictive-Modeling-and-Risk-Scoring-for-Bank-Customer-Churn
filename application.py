@@ -330,20 +330,6 @@ if st.session_state["current_page"] == "simulator":
         importances = classifier.feature_importances_
         feature_names = [name.split("__")[-1] for name in preprocessor.get_feature_names_out()]
         
-        # Dictionary matching feature names to their live values from your input widgets
-        live_values = {
-            "Age": age,
-            "Balance": balance,
-            "NumOfProducts": num_products,
-            "IsActiveMember": "Yes" if is_active == 1 else "No",
-            "CreditScore": credit_score,
-            "Geography": geography,
-            "Gender": gender,
-            "Tenure": tenure,
-            "HasCrCard": "Yes" if has_cr_card == 1 else "No",
-            "EstimatedSalary": estimated_salary
-        }
-        
         # --- 3. COMPUTE DYNAMIC WEIGHTED SHIFTS ---
         # We use the feature importance to distribute the total shift across features
         total_importance = sum(importances)
@@ -359,16 +345,25 @@ if st.session_state["current_page"] == "simulator":
         for name, weight in zip(feature_names, normalized_weights):
             feature_shift = total_delta * weight
             
-            # Only show features that have a noticeable impact to keep the chart clean
             if abs(feature_shift) > 0.05:
-                # Pull the live value from your sidebar control
-                display_val = live_values.get(name, "")
-                label = f"{name} ({display_val})" if display_val != "" else name
+                # Check if the feature name exists in your input_data dict
+                if name in input_data:
+                    # Grab the single value out of the list bracket, e.g., [30][0] -> 30
+                    raw_val = input_data[name][0]
+                    
+                    # Convert numeric flags like 1/0 to pretty text for the manager
+                    if name in ["IsActiveMember", "HasCrCard"]:
+                        display_val = "Yes" if raw_val == 1 else "No"
+                    else:
+                        display_val = raw_val
+                        
+                    label = f"{name} ({display_val})"
+                else:
+                    label = name
                 
                 dynamic_x.append(label)
                 dynamic_y.append(feature_shift)
                 
-                # Format the text with a clear plus or minus sign
                 prefix = "+" if feature_shift > 0 else ""
                 dynamic_text.append(f"{prefix}{feature_shift:.2f}%")
                 dynamic_measure.append("relative")
