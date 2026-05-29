@@ -181,7 +181,7 @@ if st.button("Predict Churn Risk"):
     labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
     color="Importance",
     color_continuous_scale="Blues")
-    fig_importance.update_layout(yaxis={"categoryorder": "value ascending"},  height=500)
+    fig_importance.update_layout(yaxis={"categoryorder": ""total ascending""},  height=500)
     st.plotly_chart(fig_importance, use_container_width=True)
     st.info(
         "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
