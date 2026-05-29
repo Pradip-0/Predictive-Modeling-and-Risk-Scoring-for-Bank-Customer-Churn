@@ -112,37 +112,34 @@ if st.session_state["current_page"] == "dashboard":
     uploaded_file = st.file_uploader("Upload your customer CSV file", type=["csv"])
     if uploaded_file is not None:
         customer = pd.read_csv(uploaded_file)
-    else:
-        st.write("File is not uploaded properly")
-
-    columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
+        columns_need= ["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]
     
-    columns_current_set= set(customer.columns)
-    columns_need_set=  set(columns_need)
-    has_all_columns = columns_need_set.issubset(columns_current_set)
-    if has_all_columns:
-        bank= customer[columns_need]
-        bank= create_basic_features(bank)
-        bank= create_intermediate_features(bank)
-        bank= create_advanced_features(bank)
-        bank= create_additional_features(bank)
-        processed_bank = preprocessor.transform(bank)
-        probabilities = classifier.predict_proba(processed_bank)
-        churn_risk_scores = probabilities[:, 1]
-        results_df = pd.DataFrame({
-        "CustomerId": customer["CustomerId"],
-        "Churn Risk Score": churn_risk_scores
-        })
-        results_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
-        results_df["Churn Risk Score"] = results_df["Churn Risk Score"].map("{:.1%}".format)
-        #top_10_risky = results_df.head(10).copy()
-        st.write("### 🚨 Top 10 High-Risk Customers (Most Likely to Churn)")
-        st.dataframe(results_df.head(10), use_container_width=True)
+        columns_current_set= set(customer.columns)
+        columns_need_set=  set(columns_need)
+        has_all_columns = columns_need_set.issubset(columns_current_set)
+        if has_all_columns:
+            bank= customer[columns_need]
+            bank= create_basic_features(bank)
+            bank= create_intermediate_features(bank)
+            bank= create_advanced_features(bank)
+            bank= create_additional_features(bank)
+            processed_bank = preprocessor.transform(bank)
+            probabilities = classifier.predict_proba(processed_bank)
+            churn_risk_scores = probabilities[:, 1]
+            results_df = pd.DataFrame({
+            "CustomerId": customer["CustomerId"],
+            "Churn Risk Score": churn_risk_scores
+            })
+            results_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
+            results_df["Churn Risk Score"] = results_df["Churn Risk Score"].map("{:.1%}".format)
+            #top_10_risky = results_df.head(10).copy()
+            st.write("### 🚨 Top 10 High-Risk Customers (Most Likely to Churn)")
+            st.dataframe(results_df.head(10), use_container_width=True)
+        else:
+            missing_columns = columns_need_set - columns_current_set
+            st.error(f"❌ Missing Columns! The uploaded file is missing: {list(missing_columns)}")
     else:
-        missing_columns = columns_need_set - columns_current_set
-        st.error(f"❌ Missing Columns! The uploaded file is missing: {list(missing_columns)}")
-else:
-    st.write("Upload Customer data as .csv file. Ensure CustomerId ifeature is inside the CSV file.")
+        st.write("Upload Customer data as .csv file. Ensure CustomerId ifeature is inside the CSV file.")
 
 #----------------------------------------------------
 # What-if Scenario simulator
