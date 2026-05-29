@@ -155,24 +155,16 @@ if st.button("Predict Churn Risk"):
     st.write("### Prediction Results")
     st.metric(label="Risk Probability", value=f"{churn_probability:.2%}")
     st.progress(float(churn_probability))
+
     class_names = classifier.classes_
+    labels = ["Retained (Class 0)", "Churned (Class 1)"]
     df_prediction = pd.DataFrame({
     "Outcome": ["No Churn", "Churn Risk"],
     "Probability": [probabilities[0][0], probabilities[0][1]]
     })
-    fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1])
+    fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1], color_discrete_map={"Retained (Class 0)": "green", "Churned (Class 1)": "red"})
     st.write(f"### Probability Distribution")
     st.plotly_chart(fig)
-
-
-
-
-
-
-
-
-
-
 
 
 
