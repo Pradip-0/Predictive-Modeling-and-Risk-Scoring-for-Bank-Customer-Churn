@@ -56,8 +56,9 @@ def go_to_simulator():
 def go_to_dashboard():
     st.session_state["current_page"] = "dashboard"
 
-TRAINING_MEDIAN_BALANCE = 97198.54
-TRAINING_MEDIAN_SALARY = 100193.915
+past_median_BALANCE = 97198.54
+past_median_SALARY = 100193.915
+train_data_count= 10000
 
 def create_basic_features(df):
   df['AgeGroup'] = pd.cut(df['Age'], bins = [0, 19, 35, 60, 120], labels = ['Teenager', 'Young', 'Mid-age', 'Old'])
@@ -120,6 +121,12 @@ if st.session_state["current_page"] == "dashboard":
             has_all_columns = columns_need_set.issubset(columns_current_set)
             if has_all_columns:
                 bank= customer[columns_need]
+                new_median_balance = bank['Balance'].median()
+                new_mdeian_salary = bank['EstimatedSalary'].median()
+                n_new = len(bank)
+                TRAINING_MEDIAN_BALANCE = (past_median_BALANCE * train_data_count + new_median_balance * n_new) / (train_data_count + n_new)
+                TRAINING_MEDIAN_SALARY = (past_median_SALARY * train_data_count + new_median_salary * n_new) / (train_data_count + n_new)
+
                 bank= create_basic_features(bank)
                 bank= create_intermediate_features(bank)
                 bank= create_advanced_features(bank)
@@ -226,6 +233,8 @@ if st.session_state["current_page"] == "simulator":
         }
     
     bank= pd.DataFrame(input_data)
+    TRAINING_MEDIAN_BALANCE = (past_median_BALANCE * train_data_count + Balance * 1) / (train_data_count + 1)
+    TRAINING_MEDIAN_SALARY = (past_median_SALARY * train_data_count + Salary * 1) / (train_data_count + 1)
     
     #------------------------
     # Feature Engineering
