@@ -122,7 +122,7 @@ def upload_file_dialog():
 # General Dashboard
 #---------------------------------------------------------
 if st.session_state["current_page"] == "dashboard":
-    st.title("General dashboard for current customers")
+    st.title("General Dashboard")
     st.button("What-IF simulator", on_click= go_to_simulator)
     if st.button("📥 Import Customer CSV Data"):
         upload_file_dialog()
@@ -150,10 +150,20 @@ if st.session_state["current_page"] == "dashboard":
             churn_risk_scores = probabilities[:, 1]
             results_df = pd.DataFrame({ "CustomerId": customer["CustomerId"],"Churn Risk Score": churn_risk_scores})
             results_df["Churn Risk Score"] = results_df["Churn Risk Score"].map("{:.1%}".format)
-            
+            if "visible_rows" not in st.session_state:
+                st.session_state["visible_rows"] = 10
+            current_limit = st.session_state["visible_rows"]
             sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
-            st.write("### 🚨 Top 10 High-Risk Customers (Most Likely to Churn)")
-            st.dataframe(sorted_df.head(10), use_container_width=True)
+            expanded_df = sorted_df.head(current_limit).copy()
+            st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
+            st.dataframe(expanded_df, use_container_width=True)
+            total_available_rows = len(results_df)
+            if current_limit < total_vailable_rows:
+                def load_more_customers():
+                    st.session_state["visible_rows"] += 10
+                st.button("🔽 Click to see more", on_click=load_more_customers)
+            else:
+                st.info("✨ Showing all available customer risk scores.")
 
             st.write("### 📊 Probability Distribution Visualization")
             fig_dist = px.histogram(
