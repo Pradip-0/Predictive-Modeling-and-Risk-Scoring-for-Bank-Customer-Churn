@@ -394,6 +394,7 @@ if st.session_state["current_page"] == "simulator":
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             margin=dict(t=20, b=20, l=20, r=20)
+            xaxis= {"tickangle": 90}
         )
         
         st.plotly_chart(fig_waterfall, use_container_width=True)
