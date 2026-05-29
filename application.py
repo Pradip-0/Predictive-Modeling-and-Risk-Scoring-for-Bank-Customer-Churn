@@ -112,6 +112,7 @@ def upload_file_dialog():
     
     if uploaded_file is not None:
         customer = pd.read_csv(uploaded_file)
+        st.button("RUN", on_click= go_to_dashboard)
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
