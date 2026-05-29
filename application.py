@@ -112,8 +112,6 @@ def upload_file_dialog():
     
     if uploaded_file is not None:
         customer = pd.read_csv(uploaded_file)
-        if st.button("Run Bulk Prediction"):
-            st.rerun()
 #---------------------------------------------------------
 # General Dashboard
 #---------------------------------------------------------
