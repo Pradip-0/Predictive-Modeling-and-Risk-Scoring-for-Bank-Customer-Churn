@@ -158,7 +158,7 @@ if st.session_state["current_page"] == "dashboard":
             st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
             st.dataframe(expanded_df, use_container_width=True)
             total_available_rows = len(results_df)
-            if current_limit < total_vailable_rows:
+            if current_limit < total_available_rows:
                 def load_more_customers():
                     st.session_state["visible_rows"] += 10
                 st.button("🔽 Click to see more", on_click=load_more_customers)
