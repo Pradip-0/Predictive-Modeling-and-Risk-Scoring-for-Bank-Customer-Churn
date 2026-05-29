@@ -168,8 +168,9 @@ if st.button("Predict Churn Risk"):
     
     importances = classifier.feature_importances_
     feature_names = preprocessor.get_feature_names_out()
+    clean_feature_names = [name.split("__")[-1] for name in feature_names]
     df_importance = pd.DataFrame({
-    "Feature": feature_names,
+    "Feature": clean_feature_names,
     "Importance": importances
     }).sort_values(by="Importance", ascending=True)
     fig_importance = px.bar(
