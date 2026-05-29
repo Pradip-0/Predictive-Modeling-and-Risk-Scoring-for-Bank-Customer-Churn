@@ -157,8 +157,8 @@ if st.button("Predict Churn Risk"):
     st.progress(float(churn_probability))
     class_names = classifier.classes_
     df_prediction = pd.DataFrame({
-    'No Churn Probability': probabilities[:, 0],
-    'Churn Risk Probability': probabilities[:, 1]
+    "Outcome": ["No Churn", "Churn Risk"],
+    "Probability": [probabilities[0][0], probabilities[0][1]]
     })
     fig = px.bar(df_prediction, x="Outcome", y="Probability", text_auto=".1%", range_y=[0, 1])
     st.write(f"### Probability Distribution for Customer #{row_index}")
