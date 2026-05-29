@@ -1,7 +1,0 @@
-{
-    "solver": "liblinear",
-    "penalty_liblinear": "l1",
-    "C": 0.10080711219518397,
-    "tol": 0.0003019767111532028,
-    "max_iter": 728
-}

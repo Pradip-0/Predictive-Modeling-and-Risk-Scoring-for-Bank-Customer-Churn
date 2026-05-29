@@ -1,7 +1,0 @@
-{
-    "solver": "newton-cholesky",
-    "penalty_standard": null,
-    "C": 2.818320737455502,
-    "tol": 0.0003335188289153146,
-    "max_iter": 445
-}

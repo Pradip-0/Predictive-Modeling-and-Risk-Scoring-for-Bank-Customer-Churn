@@ -1,9 +1,0 @@
-{
-    "n_estimators": 332,
-    "max_depth": 3,
-    "grow_policy": "lossguide",
-    "learning_rate": 0.12628318005129285,
-    "booster": "gbtree",
-    "gamma": 0.29561758868485183,
-    "min_child_weight": 1
-}
