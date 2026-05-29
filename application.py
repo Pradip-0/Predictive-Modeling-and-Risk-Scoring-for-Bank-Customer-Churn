@@ -138,7 +138,7 @@ def upload_file_dialog():
 #---------------------------------------------------------
 if st.session_state["current_page"] == "dashboard":
     st.title("General Dashboard")
-    btn_left_col, space_col, btn_right_col = st.columns([1, 5, 2])
+    btn_left_col, space_col, btn_right_col = st.columns([1.5, 6, 2.5], vertical_alignment="top")
     with btn_left_col:
         st.button("What-IF simulator", on_click= go_to_simulator)
     with btn_right_col:
