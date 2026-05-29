@@ -150,54 +150,57 @@ if st.session_state["current_page"] == "dashboard":
             churn_risk_scores = probabilities[:, 1]
             results_df = pd.DataFrame({ "CustomerId": customer["CustomerId"],"Churn Risk Score": churn_risk_scores})
             results_df["Churn Risk Score"] = results_df["Churn Risk Score"].map("{:.1%}".format)
-            if "visible_rows" not in st.session_state:
-                st.session_state["visible_rows"] = 10
-            current_limit = st.session_state["visible_rows"]
-            sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
-            expanded_df = sorted_df.head(current_limit).copy()
-            st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
-            st.dataframe(expanded_df, use_container_width=True)
-            total_available_rows = len(results_df)
-            if current_limit < total_available_rows:
-                def load_more_customers():
-                    st.session_state["visible_rows"] += 10
-                st.button("🔽 Click to see more", on_click=load_more_customers)
-            else:
-                st.info("✨ Showing all available customer risk scores.")
-
-            st.write("### 📊 Probability Distribution Visualization")
-            fig_dist = px.histogram(
-            results_df, 
-            x="Churn Risk Score", 
-            title="Global Churn Risk Score Distribution",
-            labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
-            color_discrete_sequence=["#4A90E2"]
-            )
-            fig_dist.update_layout(yaxis_title="Count of Customers")
-            st.plotly_chart(fig_dist, use_container_width=True)
-
-            importances = classifier.feature_importances_
-            feature_names = preprocessor.get_feature_names_out()
-            clean_feature_names = [name.split("__")[-1] for name in feature_names]
-            df_importance = pd.DataFrame({
-            "Feature": clean_feature_names,
-            "Importance": importances
-            }).sort_values(by="Importance", ascending=True)
-            fig_importance = px.bar(
-            df_importance,
-            x="Importance",
-            y="Feature",
-            orientation="h",
-            title="Key Drivers of Customer Churn",
-            labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
-            color="Importance",
-            color_continuous_scale="Blues")
-            fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=500)
-            st.plotly_chart(fig_importance, use_container_width=True)
-            st.info(
-                "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
-                "Higher scores indicate that the feature has a stronger impact on whether a customer stays or leaves."
-            )
+            col_left, col_right = st.columns([1, 1])
+            with col_left:
+                if "visible_rows" not in st.session_state:
+                    st.session_state["visible_rows"] = 10
+                current_limit = st.session_state["visible_rows"]
+                sorted_df = results_df.sort_values(by="Churn Risk Score", ascending=False)
+                expanded_df = sorted_df.head(current_limit).copy()
+                st.write(f"### 🚨 Top {len(expanded_df)} High-Risk Customers (Most Likely to Churn)")
+                st.dataframe(expanded_df, use_container_width=True)
+                total_available_rows = len(results_df)
+                if current_limit < total_available_rows:
+                    def load_more_customers():
+                        st.session_state["visible_rows"] += 10
+                    st.button("🔽 Click to see more", on_click=load_more_customers)
+                else:
+                    st.info("✨ Showing all available customer risk scores.")
+            
+            with col_right:
+                st.write("### 📊 Probability Distribution Visualization")
+                fig_dist = px.histogram(
+                results_df, 
+                x="Churn Risk Score", 
+                title="Global Churn Risk Score Distribution",
+                labels={"Churn Risk Score": "Predicted Churn Probability", "count": "Number of Customers"},
+                color_discrete_sequence=["#4A90E2"]
+                )
+                fig_dist.update_layout(yaxis_title="Count of Customers")
+                st.plotly_chart(fig_dist, use_container_width=True)
+    
+                importances = classifier.feature_importances_
+                feature_names = preprocessor.get_feature_names_out()
+                clean_feature_names = [name.split("__")[-1] for name in feature_names]
+                df_importance = pd.DataFrame({
+                "Feature": clean_feature_names,
+                "Importance": importances
+                }).sort_values(by="Importance", ascending=True)
+                fig_importance = px.bar(
+                df_importance,
+                x="Importance",
+                y="Feature",
+                orientation="h",
+                title="Key Drivers of Customer Churn",
+                labels={"Importance": "Relative Importance Score", "Feature": "Customer Attribute"},
+                color="Importance",
+                color_continuous_scale="Blues")
+                fig_importance.update_layout(yaxis={"categoryorder": "total ascending"},  height=500)
+                st.plotly_chart(fig_importance, use_container_width=True)
+                st.info(
+                    "💡 **Regulatory Insight:** This chart displays the global drivers of churn risk. "
+                    "Higher scores indicate that the feature has a stronger impact on whether a customer stays or leaves."
+                )
         else:
             missing_columns = columns_need_set - columns_current_set
             st.error(f"❌ Missing Columns! The uploaded file is missing: {list(missing_columns)}")
