@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import shap
 from sklearn.inspection import PartialDependenceDisplay
 from itertools import combinations
+import traceback
 
 #------------------------------
 # Data and model loading
